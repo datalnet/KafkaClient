@@ -2,7 +2,7 @@
 
 public class TestAKafkaClientCoreService : KafkaClientCoreService
 {
-    public TestAKafkaClientCoreService(KafkaClientOptions kafkaClientOptions) : base(kafkaClientOptions)
+    public TestAKafkaClientCoreService(KafkaClientOptions<TestAKafkaClientCoreService> kafkaClientOptions) : base(kafkaClientOptions)
     {
     }
 }

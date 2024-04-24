@@ -25,6 +25,6 @@ public class KafkaClientOptionsBuilder : IKafkaClientOptionsBuilderInfrastructur
         return this;
     }
 
-    public virtual KafkaClientOptionsBuilder UseApplicationServiceProvider(IServiceProvider serviceProvider)
-        => WithOption(e => e.WithApplicationServiceProvider(serviceProvider));
+    //public virtual KafkaClientOptionsBuilder UseApplicationServiceProvider(IServiceProvider serviceProvider)
+    //    => WithOption(e => e.WithApplicationServiceProvider(serviceProvider));
 }

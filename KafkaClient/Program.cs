@@ -38,15 +38,14 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", (IServiceProvider serviceProvider) =>
+app.MapGet("/weatherforecast", (TestKafkaClientCoreService testKafkaClientCoreService, TestAKafkaClientCoreService testAKafkaClientCoreService) =>
 {
-    var TT = serviceProvider.GetService<TestKafkaClientCoreService>();
-    //var YY = serviceProvider.GetService<KafkaClientOptions>();
-    //var YY = serviceProvider.GetService<TestKafkaClientCoreService>();
+    //var TT = serviceProvider.GetService<TestKafkaClientCoreService>();
+    //var YY = serviceProvider.GetService<TestAKafkaClientCoreService>();
 
-    //var service = testKafkaClientCoreService;
+    var service = testKafkaClientCoreService;
 
-    //var serviceA = testAKafkaClientCoreService;
+    var serviceA = testAKafkaClientCoreService;
 
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast

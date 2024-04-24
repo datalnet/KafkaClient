@@ -12,23 +12,23 @@ public class CoreOptionsExtension : IKafkaClientOptionsExtension
 
     protected CoreOptionsExtension(CoreOptionsExtension copyFrom)
     {
-        _applicationServiceProvider = copyFrom.ApplicationServiceProvider;
+        //_applicationServiceProvider = copyFrom.ApplicationServiceProvider;
     }
 
     public virtual KafkaClientModel KafkaClientModel => _kafkaClientModel;
 
     protected virtual CoreOptionsExtension Clone() => new(this);
 
-    public virtual IServiceProvider? ApplicationServiceProvider => _applicationServiceProvider;
+    //public virtual IServiceProvider? ApplicationServiceProvider => _applicationServiceProvider;
 
-    public virtual CoreOptionsExtension WithApplicationServiceProvider(IServiceProvider applicationServiceProvider)
-    {
-        var clone = Clone();
+    //public virtual CoreOptionsExtension WithApplicationServiceProvider(IServiceProvider applicationServiceProvider)
+    //{
+    //    var clone = Clone();
 
-        clone._applicationServiceProvider = applicationServiceProvider;
+    //    clone._applicationServiceProvider = applicationServiceProvider;
 
-        return clone;
-    }
+    //    return clone;
+    //}
 
     public virtual CoreOptionsExtension WithModel(KafkaClientModel model)
     {

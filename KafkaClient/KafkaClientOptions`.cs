@@ -20,8 +20,6 @@ public class KafkaClientOptions<TContext> : KafkaClientOptions where TContext : 
 
     public override KafkaClientOptions WithExtension<TExtension>(TExtension extension)
     {
-        var type1 = typeof(TContext);
-
         var type = extension.GetType();
 
         var ordinal = ExtensionsMap.Count;

@@ -32,15 +32,15 @@ public abstract class KafkaClientCoreService
 
         var options = optionsBuilder.Options;
 
-        //var option = _kafkaClientOptions.GetExtension<CoreOptionsExtension>();
+        var option = _kafkaClientOptions.GetExtension<CoreOptionsExtension>();
 
-        //if (option != null)
-        //{
-        //    _kafkaClientModel = option.KafkaClientModel;
-        //}
-        //else
-        //{
-        //    throw new NullReferenceException("Model not configured. Add one in AddIndexedDbDatabase method");
-        //}
+        if (option != null)
+        {
+            _kafkaClientModel = option.KafkaClientModel;
+        }
+        else
+        {
+            throw new NullReferenceException("Model not configured. Add one in AddIndexedDbDatabase method");
+        }
     }
 }

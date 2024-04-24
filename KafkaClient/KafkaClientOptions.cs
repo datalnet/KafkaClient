@@ -11,8 +11,7 @@ public abstract class KafkaClientOptions : IKafkaClientOptions
         _extensionsMap = ImmutableSortedDictionary.Create<Type, (IKafkaClientOptionsExtension, int)>(TypeFullNameComparer.Instance);
     }
 
-    protected KafkaClientOptions(
-        IReadOnlyDictionary<Type, IKafkaClientOptionsExtension> extensions)
+    protected KafkaClientOptions(IReadOnlyDictionary<Type, IKafkaClientOptionsExtension> extensions)
     {
         _extensionsMap = ImmutableSortedDictionary.Create<Type, (IKafkaClientOptionsExtension, int)>(TypeFullNameComparer.Instance)
             .AddRange(extensions.Select((p, i) => new KeyValuePair<Type, (IKafkaClientOptionsExtension, int)>(p.Key, (p.Value, i))));

@@ -1,40 +1,37 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace KafkaClient;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddKafkaClient<TContext>(
+    public static IServiceCollection AddKafkaClient<TService>(
         this IServiceCollection serviceCollection,
         Action<KafkaClientOptionsBuilder>? options = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped
-        ) where TContext : KafkaClientCoreService
-        => AddKafkaClient<TContext, TContext>(serviceCollection, options, contextLifetime, optionsLifetime);
+        ) where TService : KafkaClientCoreService
+        => AddKafkaClient<TService, TService>(serviceCollection, options, contextLifetime, optionsLifetime);
 
-    public static IServiceCollection AddKafkaClient<TContextService, TContextImplementation>(
+    public static IServiceCollection AddKafkaClient<TService, TServiceImplementation>(
         this IServiceCollection serviceCollection,
         Action<KafkaClientOptionsBuilder>? optionsAction = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TContextImplementation : KafkaClientCoreService, TContextService
-        => AddKafkaClient<TContextService, TContextImplementation>(
+        where TServiceImplementation : KafkaClientCoreService, TService
+        => AddKafkaClient<TService, TServiceImplementation>(
             serviceCollection,
             optionsAction == null
                 ? null
                 : (_, b) => optionsAction(b), contextLifetime, optionsLifetime);
 
-    public static IServiceCollection AddKafkaClient<TContextService, TContextImplementation>(
+    public static IServiceCollection AddKafkaClient<TService, TServiceImplementation>(
         this IServiceCollection serviceCollection,
         Action<IServiceProvider, KafkaClientOptionsBuilder>? optionsAction,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TContextImplementation : KafkaClientCoreService, TContextService
+        where TServiceImplementation : KafkaClientCoreService, TService
     {
-        var type = typeof(TContextImplementation);
-
         if (contextLifetime == ServiceLifetime.Singleton)
         {
             optionsLifetime = ServiceLifetime.Singleton;
@@ -42,48 +39,41 @@ public static class ServiceCollectionExtensions
 
         if (optionsAction != null)
         {
-            CheckContextConstructors<TContextImplementation>();
+            CheckContextConstructors<TServiceImplementation>();
         }
 
-        AddCoreServices<TContextImplementation>(serviceCollection, optionsAction, optionsLifetime);
+        AddCoreServices<TServiceImplementation>(serviceCollection, optionsAction, optionsLifetime);
 
-        //serviceCollection.TryAdd(new ServiceDescriptor(typeof(TContextService), typeof(TContextImplementation), contextLifetime));
-        serviceCollection.AddScoped(typeof(TContextImplementation));
+        serviceCollection.TryAdd(new ServiceDescriptor(typeof(TService), typeof(TServiceImplementation), contextLifetime));
 
-        //serviceCollection.AddKeyedScoped(typeof(TContextService), typeof(TContextImplementation), type);
-
-        if (typeof(TContextService) != typeof(TContextImplementation))
+        if (typeof(TService) != typeof(TServiceImplementation))
         {
             serviceCollection.TryAdd(
                 new ServiceDescriptor(
-                    typeof(TContextImplementation),
-                    p => (TContextImplementation)p.GetService<TContextService>()!,
+                    typeof(TServiceImplementation),
+                    p => (TServiceImplementation)p.GetService<TService>()!,
                     contextLifetime));
         }
 
         return serviceCollection;
     }
 
-    private static void AddCoreServices<TContextImplementation>(
+    private static void AddCoreServices<TServiceImplementation>(
         IServiceCollection serviceCollection,
         Action<IServiceProvider, KafkaClientOptionsBuilder> optionsAction,
         ServiceLifetime optionsLifetime)
-        where TContextImplementation : KafkaClientCoreService
+        where TServiceImplementation : KafkaClientCoreService
     {
-        var type = typeof(TContextImplementation);
-
-        //serviceCollection.TryAddSingleton<ServiceProviderAccessor>();
-
         serviceCollection.TryAdd(
             new ServiceDescriptor(
-                typeof(KafkaClientOptions<TContextImplementation>),
-                p => CreateDbContextOptions<TContextImplementation>(p, optionsAction),
+                typeof(KafkaClientOptions<TServiceImplementation>),
+                p => CreateDbContextOptions<TServiceImplementation>(p, optionsAction),
                 optionsLifetime));
 
         serviceCollection.Add(
             new ServiceDescriptor(
                 typeof(KafkaClientOptions),
-                p => p.GetRequiredService<KafkaClientOptions<TContextImplementation>>(),
+                p => p.GetRequiredService<KafkaClientOptions<TServiceImplementation>>(),
                 optionsLifetime));
     }
 
@@ -97,18 +87,15 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    private static KafkaClientOptions<TContext> CreateDbContextOptions<TContext>(
+    private static KafkaClientOptions<TServiceImplementation> CreateDbContextOptions<TServiceImplementation>(
         IServiceProvider applicationServiceProvider,
         Action<IServiceProvider, KafkaClientOptionsBuilder>? optionsAction)
-        where TContext : KafkaClientCoreService
+        where TServiceImplementation : KafkaClientCoreService
     {
+         var builder = new KafkaClientOptionsBuilder<TServiceImplementation>(
+              new KafkaClientOptions<TServiceImplementation>(new Dictionary<Type, IKafkaClientOptionsExtension>()));
 
-        var type = typeof(TContext);
-
-         var builder = new KafkaClientOptionsBuilder<TContext>(
-              new KafkaClientOptions<TContext>(new Dictionary<Type, IKafkaClientOptionsExtension>()));
-
-        builder.UseApplicationServiceProvider(applicationServiceProvider);
+        //builder.UseApplicationServiceProvider(applicationServiceProvider);
 
         optionsAction?.Invoke(applicationServiceProvider, builder);
 

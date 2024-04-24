@@ -16,6 +16,6 @@ public class KafkaClientOptionsBuilder<TContext> : KafkaClientOptionsBuilder whe
     public new virtual KafkaClientOptionsBuilder<TContext> UseModel(KafkaClientModel model) 
         => (KafkaClientOptionsBuilder<TContext>)base.UseModel(model);
 
-    public new virtual KafkaClientOptionsBuilder<TContext> UseApplicationServiceProvider(IServiceProvider? serviceProvider)
-        => (KafkaClientOptionsBuilder<TContext>)base.UseApplicationServiceProvider(serviceProvider);
+    //public new virtual KafkaClientOptionsBuilder<TContext> UseApplicationServiceProvider(IServiceProvider? serviceProvider)
+    //    => (KafkaClientOptionsBuilder<TContext>)base.UseApplicationServiceProvider(serviceProvider);
 }
